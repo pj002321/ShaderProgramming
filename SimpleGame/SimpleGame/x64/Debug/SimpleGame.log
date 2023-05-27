@@ -1,0 +1,13 @@
+﻿  Renderer.cpp
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(122,20): warning C4018: '<': signed 또는 unsigned가 일치하지 않습니다.
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(150,34): warning C4267: '=': 'size_t'에서 'GLint'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(298,17): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(385,16): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(421,17): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(425,31): warning C4244: '인수': 'double'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(503,56): warning C4244: '인수': 'GLuint'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(504,56): warning C4244: '인수': 'GLuint'에서 'GLfloat'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(529,33): warning C4305: '인수': 'double'에서 'GLfloat'(으)로 잘립니다.
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(531,50): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\PC\Desktop\SimpleGame\SimpleGame\Renderer.cpp(535,17): warning C4305: '+=': 'double'에서 'float'(으)로 잘립니다.
+  SimpleGame.vcxproj -> C:\Users\PC\Desktop\SimpleGame\x64\Debug\SimpleGame.exe
