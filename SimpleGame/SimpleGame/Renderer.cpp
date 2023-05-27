@@ -451,6 +451,9 @@ void Renderer::DrawTextureSandbox()
 	//glBindTexture(GL_TEXTURE20, m_CheckerBoardTexture);
 	glBindTexture(GL_TEXTURE_2D, m_RGBTexture);
 	
+	GLuint repeateULoc = glGetUniformLocation(shader,"u_XYRepeat");
+	glUniform2f(repeateULoc, (float)((int)g_time*4), 4.f);
+	g_time += 0.008f;
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 }
