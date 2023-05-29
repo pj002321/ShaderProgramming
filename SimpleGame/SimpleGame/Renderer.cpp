@@ -34,6 +34,12 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	m_TextureSandboxShader= CompileShaders("./Shaders/TextureSandBox.vs",
 		"./Shaders/TextureSandBox.fs");
 
+	/*m_VertexSandboxShader = CompileShaders("./Shaders/line.vs",
+		"./Shaders/line.fs");*/
+
+	m_MergedTexture = CompileShaders("./Shaders/TextureSandbox.vs", "./Shaders/TextureSandbox.fs");
+	m_GridMeshShader = CompileShaders("./Shaders/GridMesh.vs","./Shaders/GridMesh.fs");
+
 	//Create VBOs
 	CreateVertexBufferObjects();
 	
@@ -41,10 +47,23 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	CreateTextures();
 	
 	//LoadTexture
-	m_RGBTexture
-		=CreatePngTexture("RGB.png",GL_NEAREST);
 
 	CreateParticleVBO(10000);
+	CreateGridMesh();
+
+	//CreateTextures
+	m_RGBTexture=CreatePngTexture("RGB.png",GL_NEAREST);
+	m_0Texture = CreatePngTexture("./tex0.png", GL_NEAREST);
+	m_1Texture = CreatePngTexture("./tex1.png", GL_NEAREST);
+	m_2Texture = CreatePngTexture("./tex2.png", GL_NEAREST);
+	m_3Texture = CreatePngTexture("./tex3.png", GL_NEAREST);
+	m_4Texture = CreatePngTexture("./tex4.png", GL_NEAREST);
+	m_5Texture = CreatePngTexture("./tex5.png", GL_NEAREST);
+
+	m_ParticleTexture = CreatePngTexture("./particle.png", GL_NEAREST);
+	m_ExplosiveTexture = CreatePngTexture("./explosion.png", GL_NEAREST);
+
+	m_TUKtexture = CreatePngTexture("./TUKorea.png", GL_NEAREST);
 
 	if (m_SolidRectShader > 0 && m_VBORect > 0)
 	{
@@ -458,6 +477,98 @@ void Renderer::DrawTextureSandbox()
 
 }
 
+void Renderer::DrawGridMesh()
+{
+	glUseProgram(m_GridMeshShader);
+
+	int attrribPosition = glGetAttribLocation(m_GridMeshShader, "a_Position");
+
+	glEnableVertexAttribArray(attrribPosition);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_GridMeshVBO);
+	glVertexAttribPointer(attrribPosition, 3, GL_FLOAT, GL_FALSE, 0, 0);
+
+	int timeLoc = glGetUniformLocation(m_GridMeshShader, "u_Time");
+	glUniform1f(timeLoc, g_time);
+	g_time += 0.01;
+
+
+	int uniformLoc_Texture = -1;
+	uniformLoc_Texture = glGetUniformLocation(m_GridMeshShader, "u_Texture");
+	glUniform1i(uniformLoc_Texture, 0);
+
+
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_TUKtexture);
+
+
+	glDrawArrays(GL_LINE_STRIP, 0, m_GridMeshVertexCount);
+}
+
+void Renderer::DrawSpriteAnimation()
+{
+	GLuint shader = m_TextureSandboxShader;
+	glUseProgram(shader);
+
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+	int posLoc = glGetAttribLocation(shader, "a_Position");
+	glEnableVertexAttribArray(posLoc);
+
+	int texLoc = glGetAttribLocation(shader, "a_Texcoord");
+	glEnableVertexAttribArray(texLoc);
+
+	glBindBuffer(GL_ARRAY_BUFFER, m_TextureSandboxVBO);
+	glVertexAttribPointer(posLoc, 3, GL_FLOAT, GL_FALSE, sizeof(float) * 5, 0);
+	glVertexAttribPointer(texLoc, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 5, (GLvoid*)(sizeof(float) * 3));
+
+	GLuint samplerULoc = glGetUniformLocation(shader, "u_TexSampler");
+	glUniform1i(samplerULoc, (int)g_time % 6);
+
+	//glBindTexture(GL_TEXTURE_2D, m_CheckerBoardTexture);
+	//glBindTexture(GL_TEXTURE_2D, m_RGBTexture);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_0Texture);
+	glActiveTexture(GL_TEXTURE1);
+	glBindTexture(GL_TEXTURE_2D, m_1Texture);
+	glActiveTexture(GL_TEXTURE2);
+	glBindTexture(GL_TEXTURE_2D, m_2Texture);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, m_3Texture);
+	glActiveTexture(GL_TEXTURE4);
+	glBindTexture(GL_TEXTURE_2D, m_4Texture);
+
+
+	////merged
+	glActiveTexture(GL_TEXTURE5);
+	glBindTexture(GL_TEXTURE_2D, m_5Texture);
+	glActiveTexture(GL_TEXTURE6);
+	glBindTexture(GL_TEXTURE_2D, m_MergedTexture);
+
+	glActiveTexture(GL_TEXTURE7);
+	glBindTexture(GL_TEXTURE_2D, m_ExplosiveTexture);
+
+	int texID[] = { 0,1 };
+
+	samplerULoc = glGetUniformLocation(shader, "u_MultiTexSampler");
+	glUniform1iv(samplerULoc, 2, texID);
+	samplerULoc = glGetUniformLocation(shader, "u_TexSampler");
+	glUniform1i(samplerULoc, 7);
+
+	int stepULoc = glGetUniformLocation(shader, "u_Step");
+
+	glUniform1i(stepULoc, (int)g_time % 6);
+
+	int seqNumLoc = glGetUniformLocation(shader, "u_seqNum");
+	glUniform1f(seqNumLoc, g_time * 10);
+
+	GLuint repeatULoc = glGetUniformLocation(shader, "u_XYRepeat");
+	glUniform2f(repeatULoc, 2.f, 2.f);
+	g_time += 0.08;
+
+	glDrawArrays(GL_TRIANGLES, 0, 6);
+}
+
 void Renderer::CreateTextures()
 {
 	static const GLulong checkerboard[] =
@@ -507,6 +618,134 @@ GLuint Renderer::CreatePngTexture(char* filePath, GLuint samplingMethod)
 	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, samplingMethod);
 
 	return temp;
+}
+
+void Renderer::CreateGridMesh()
+{
+	float basePosX = -0.5f;
+	float basePosY = -0.5f;
+	float targetPosX = 0.5f;
+	float targetPosY = 0.5f;
+
+	int pointCountX = 70;
+	int pointCountY = 70;
+
+	float width = targetPosX - basePosX;
+	float height = targetPosY - basePosY;
+
+	float* point = new float[pointCountX * pointCountY * 2];
+	float* vertices = new float[(pointCountX - 1) * (pointCountY - 1) * 2 * 3 * 3];
+	m_GridMeshVertexCount = (pointCountX - 1) * (pointCountY - 1) * 2 * 3;
+
+	//Prepare points
+	for (int x = 0; x < pointCountX; x++)
+	{
+		for (int y = 0; y < pointCountY; y++)
+		{
+			point[(y * pointCountX + x) * 2 + 0] = basePosX + width * (x / (float)(pointCountX - 1));
+			point[(y * pointCountX + x) * 2 + 1] = basePosY + height * (y / (float)(pointCountY - 1));
+		}
+	}
+
+	//Make triangles
+	int vertIndex = 0;
+	for (int x = 0; x < pointCountX - 1; x++)
+	{
+		for (int y = 0; y < pointCountY - 1; y++)
+		{
+			//Triangle part 1
+			vertices[vertIndex] = point[(y * pointCountX + x) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[(y * pointCountX + x) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1) * pointCountX + (x + 1)) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1) * pointCountX + (x + 1)) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1) * pointCountX + x) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1) * pointCountX + x) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+
+			//Triangle part 2
+			vertices[vertIndex] = point[(y * pointCountX + x) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[(y * pointCountX + x) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+			vertices[vertIndex] = point[(y * pointCountX + (x + 1)) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[(y * pointCountX + (x + 1)) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1) * pointCountX + (x + 1)) * 2 + 0];
+			vertIndex++;
+			vertices[vertIndex] = point[((y + 1) * pointCountX + (x + 1)) * 2 + 1];
+			vertIndex++;
+			vertices[vertIndex] = 0.f;
+			vertIndex++;
+		}
+	}
+
+	glGenBuffers(1, &m_GridMeshVBO);
+	glBindBuffer(GL_ARRAY_BUFFER, m_GridMeshVBO);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(float) * (pointCountX - 1) * (pointCountY - 1) * 2 * 3 * 3, vertices, GL_STATIC_DRAW);
+}
+
+void Renderer::CreateFBOs()
+{
+	GLuint m_AFBOTexture = 0;
+	GLuint m_BFBOTexture = 0;
+	GLuint m_CFBOTexture = 0;
+
+	//Color Buffer
+
+	glGenTextures(1, &m_AFBOTexture);
+	glBindTexture(GL_TEXTURE_2D, m_AFBOTexture);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glGenTextures(1, &m_BFBOTexture);
+	glBindTexture(GL_TEXTURE_2D, m_BFBOTexture);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	glGenTextures(1, &m_CFBOTexture);
+	glBindTexture(GL_TEXTURE_2D, m_CFBOTexture);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_GENERATE_MIPMAP, GL_TRUE);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
+
+	//Depth Buffer
+
+
+	glGenRenderbuffers(1, &m_DepthRenderBuffer);
+	glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRenderBuffer);
+	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512);
+	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+
+	glGenFramebuffers(1, &m_A_FBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_AFBOTexture, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRenderBuffer);
 }
 
 void Renderer::DrawFragmentSandbox()

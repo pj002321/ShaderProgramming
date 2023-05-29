@@ -31,7 +31,9 @@ void RenderScene(void)
 	//g_Renderer->Class0310_Rendering();
 	//g_Renderer->DrawParticle();
 	//g_Renderer->DrawFragmentSandbox();
-	g_Renderer->DrawTextureSandbox();
+	//g_Renderer->DrawTextureSandbox();
+	g_Renderer->DrawSpriteAnimation();
+	//g_Renderer->DrawGridMesh();
 	//g_Renderer->DrawVertexSandbox();
 	
 	glutSwapBuffers();

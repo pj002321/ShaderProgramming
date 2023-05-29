@@ -16,13 +16,14 @@ public:
 	bool IsInitialized();
 	void DrawSolidRect(float x, float y, float z, float size, float r, float g, float b, float a);
 	void Class0310_Rendering();
+
 	void DrawParticle();
 	void DrawFragmentSandbox();
 	void DrawAlphaClear();
 	void DrawVertexSandbox();
 	void DrawTextureSandbox();
-	void CreateTextures();
-	GLuint CreatePngTexture(char* filePath, GLuint samplingMethod);
+	void DrawGridMesh();
+	void DrawSpriteAnimation();
 
 private:
 	void Initialize(int windowSizeX, int windowSizeY);
@@ -33,6 +34,11 @@ private:
 	void GetGLPosition(float x, float y, float *newX, float *newY);
 	void Class0310();
 	void CreateParticleVBO(int numParticleCount);
+	void CreateTextures();
+	GLuint CreatePngTexture(char* filePath, GLuint samplingMethod);
+	void CreateGridMesh();
+	void CreateFBOs();
+
 	GLuint m_ParticleShader = -1;
 	GLuint m_ParticleVBO = -1;
 	GLuint m_ParticleVelVBO = -1;
@@ -76,6 +82,34 @@ private:
 	GLuint m_CheckerBoardTexture = 0;
 
 	GLuint m_RGBTexture = 0;
+
+	GLuint m_0Texture = 0;
+	GLuint m_1Texture = 0;
+	GLuint m_2Texture = 0;
+	GLuint m_3Texture = 0;
+	GLuint m_4Texture = 0;
+	GLuint m_5Texture = 0;
+
+	GLuint m_MergedTexture = 0;
+	GLuint m_ParticleTexture = 0;
+	GLuint m_ExplosiveTexture = 0;
+
+	// Flag Vertex Shader 
+
+	GLuint m_GridMeshShader = 0;
+	GLuint m_GridMeshVBO = 0;
+
+	float m_GridMeshVertexCount = 0;
+	GLuint m_TUKtexture = 0;
+
+	// FBO
+	GLuint m_AFBOTexture = 0;
+	GLuint m_BFBOTexture = 0;
+	GLuint m_CFBOTexture = 0;
+
+	GLuint m_DepthRenderBuffer = 0;
+
+	GLuint m_A_FBO = 0;
 
 };
 
