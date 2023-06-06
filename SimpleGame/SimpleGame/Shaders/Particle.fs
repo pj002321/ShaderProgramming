@@ -6,6 +6,7 @@ in vec4 v_Color;
 in vec2 v_UV;
 
 uniform sampler2D u_Texture;
+
 void circle()
 {
 	vec2 newValue = v_UV - vec2(0.5, 0.5);

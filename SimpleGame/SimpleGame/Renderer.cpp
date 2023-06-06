@@ -398,10 +398,14 @@ void Renderer::DrawParticle()
 
 	int timeLoc = glGetUniformLocation(program, "u_Time");
 	glUniform1f(timeLoc, g_time);
+	g_time += 0.01;
 	int accelLoc = glGetUniformLocation(program, "u_Accel");
 	glUniform3f(accelLoc, 0.f, -2.8f, 0.f);
 
-	g_time += 0.01;
+	int texULoc = glGetUniformLocation(program,"u_Texture");
+	glUniform1i(texULoc, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_ParticleTexture);
 
 	glDrawArrays(GL_TRIANGLES, 0, m_ParticleVertexCount);
 
@@ -846,7 +850,7 @@ void Renderer::CreateParticleVBO(int numParticleCount)
 	float* vertices = NULL;
 	vertices = new float[totalFloatCount];
 
-	float particleSize = 0.01f;
+	float particleSize = 0.05f;
 
 	int index = 0;
 	for (int i = 0; i < numParticleCount; i++)
