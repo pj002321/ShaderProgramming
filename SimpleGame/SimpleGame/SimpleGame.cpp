@@ -36,7 +36,7 @@ void RenderScene(void)
 	//g_Renderer->DrawGridMesh();
 	//g_Renderer->DrawVertexSandbox();
 	
-	glutSwapBuffers();
+	glutSwapBuffers();	//front -> back , back -> front
 }
 
 void Idle(void)

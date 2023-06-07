@@ -51,6 +51,11 @@ void Renderer::Initialize(int windowSizeX, int windowSizeY)
 	CreateParticleVBO(10000);
 	CreateGridMesh();
 
+	//Create FBO
+	
+	CreateFBOs();
+
+
 	//CreateTextures
 	m_RGBTexture=CreatePngTexture("RGB.png",GL_NEAREST);
 	m_0Texture = CreatePngTexture("./tex0.png", GL_NEAREST);
@@ -740,20 +745,31 @@ void Renderer::CreateFBOs()
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 512, 512, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0);
 
 	//Depth Buffer
-
-
 	glGenRenderbuffers(1, &m_DepthRenderBuffer);
 	glBindRenderbuffer(GL_RENDERBUFFER, m_DepthRenderBuffer);
 	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT, 512, 512);
 	glBindRenderbuffer(GL_RENDERBUFFER, 0);
 
-	glGenFramebuffers(1, &m_A_FBO);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_AFBOTexture, 0);
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRenderBuffer);
+	glGenFramebuffers(1, &m_A_FBO);  // 공백 FBO를 생성
+	glBindFramebuffer(GL_FRAMEBUFFER,m_A_FBO);
+	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_AFBOTexture, 0);			// Texture
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_DepthRenderBuffer);	// Depth buffer
+
+	GLenum status = glCheckFramebufferStatus(GL_FRAMEBUFFER);
+	if (status != GL_FRAMEBUFFER_COMPLETE)
+	{
+		std::cout << "fbo create fail" << std::endl;
+	}
+
+	glBindFramebuffer(GL_FRAMEBUFFER,0); 
+
 }
 
 void Renderer::DrawFragmentSandbox()
 {
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	// 시작점xy , width / height
+	glViewport(0, 0, 512, 512);
 	GLuint shader = m_FragmentSandboxShader;
 	glUseProgram(shader);
 	glEnable(GL_BLEND);

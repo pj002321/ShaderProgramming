@@ -102,16 +102,13 @@ private:
 	float m_GridMeshVertexCount = 0;
 	GLuint m_TUKtexture = 0;
 
-	// FBO
+	// FBO (FrameBufferObject)
 	GLuint m_AFBOTexture = 0;
 	GLuint m_BFBOTexture = 0;
 	GLuint m_CFBOTexture = 0;
 
-	GLuint m_DepthRenderBuffer = 0;
+	GLuint m_DepthRenderBuffer = 0; // Texture 보다 빠르다.
 
 	GLuint m_A_FBO = 0;
-
-
-
 };
 
