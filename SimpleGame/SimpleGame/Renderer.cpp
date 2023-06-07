@@ -780,6 +780,11 @@ void Renderer::DrawFragmentSandbox()
 	glUniform1f(timeUloc, g_time);
 	g_time += 0.008;
 
+	int texULoc = glGetUniformLocation(shader, "u_Texture");
+	glUniform1i(texULoc, 0);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, m_TUKtexture);
+
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 
 }

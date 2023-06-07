@@ -9,7 +9,7 @@ uniform vec2 u_Points[3];
 uniform float u_Time;
 
 const float c_PI = 3.141592;
-
+uniform sampler2D u_Texture; 
 void circle()
 {
 	vec2 newValue = v_UV - u_Points[2];
@@ -82,9 +82,36 @@ void sinGraph()
 	}
 }
 
+void realFlag()
+{
+	// 맨왼쪽은 0 오른쪽은 1 사이의 주기를 생성
+	float period = (v_UV.x+1.0) * 1.0;
+	float xValue = v_UV.x * 2.0 * c_PI*period;
+	float yValue = (1.0-(v_UV.y)-0.5)*2.0;	// -> 맨아래가 -1 맨위가 +1
+	float sinValue = 0.25 * sin(xValue-50.0*u_Time);  // 0.25 ~ -0.25 사이를 왔다갔다 함
+
+	if(	sinValue* v_UV.x+0.75>yValue 
+	&&  
+		sinValue * v_UV.x -0.75<yValue)
+	{
+		float vX = v_UV.x;
+		float yWidth = 1.5; //0.75 - (-0.75)
+		float yDistance = yValue-(sinValue*v_UV.x-0.75);
+		float vY = 1.0-yDistance/yWidth;
+
+		FragColor = texture(u_Texture,vec2(vX,vY));
+		//FragColor = vec4(vX,vY,0,1);
+	}
+	else{
+		FragColor = vec4(0);
+
+	}
+}
 void main()
 {
 	//radar();
 	//UVTest();
-	sinGraph();
+	//sinGraph();
+
+	realFlag();
 }
