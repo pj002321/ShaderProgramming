@@ -91,6 +91,7 @@ private:
 	GLuint m_5Texture = 0;
 	GLuint m_MergedTexture = 0;
 	GLuint m_ExplosionTexture = 0;
+	GLuint m_ParticleTexture = 0;
 
 	GLuint m_GridMeshShader = 0;
 	GLuint m_GridMeshVBO = 0;
@@ -126,5 +127,21 @@ private:
 	GLuint m_MidTermVSVBO = 0;
 	GLuint m_MidTermFSShader = 0;
 	GLuint m_MidTermFSVBO = 0;
+
+	//Bloom
+	GLuint m_HDRFBO = 0;
+	GLuint m_HDRLowTexture = 0;
+	GLuint m_HDRHighTexture = 0;
+	GLuint m_PingpongFBO[2] = { 0,0 };		// ¹Ýº¹Àû blur
+	GLuint m_PingpongTexture[2] = { 0,0 };
+	GLuint m_FullRectVBO = 0;
+	GLuint m_GaussianBlurHShader = 0;
+	GLuint m_GaussianBlurVShader = 0;
+	GLuint m_DrawMergeTextureShader = 0;
+	void PrepareBloom();
+public:
+	void DrawGaussianBlur(GLuint texID, GLuint targetFBOID, GLuint Shader);
+	void DrawMergeBloomTexture(GLuint sceneTexId, GLuint bloomTexID, float exposure);
+	void DrwaParticleWithBloom();
 };
 
